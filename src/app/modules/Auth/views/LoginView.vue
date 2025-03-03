@@ -43,10 +43,7 @@
                     </template>
                   </v-btn>
                 </v-col>
-                <v-col cols="12" class="text-end">
-                  ¿No tienes cuenta?
-                  <router-link to="/registro">Registrarse</router-link>
-                </v-col>
+            
               </v-row>
             </v-card-item>
             <v-card-item class="text-center">
