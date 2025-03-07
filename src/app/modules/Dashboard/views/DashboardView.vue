@@ -35,8 +35,12 @@
               </v-chip>
             </v-card-subtitle>
             <v-card-title>
-              <small> {{ group.name }} </small> | {{ group.course }}
+              <strong> {{ group.name }} </strong> | {{ group.course }}
             </v-card-title>
+
+            <v-card-subtitle>
+              <b>Plan de estudio: </b> {{ group.curriculum }}
+            </v-card-subtitle>
             <v-card-subtitle>
               <b>Modulo: </b>{{ group.module }}
             </v-card-subtitle>
@@ -69,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import {  ref } from "vue";
+import { ref } from "vue";
 import { usePeriodStore } from "@/app/store/period.stores";
 import { _getAll } from "@/app/modules/Period/services";
 import { _getGroupsForTeacher } from "@/app/modules/Group/services";

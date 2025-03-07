@@ -23,8 +23,10 @@
         <v-row>
           <v-col>
             <v-list-item>
-              <v-list-item-title>Grupo</v-list-item-title>
-              <v-list-item-subtitle>{{ group?.name }}</v-list-item-subtitle>
+              <v-list-item-title>Plan</v-list-item-title>
+              <v-list-item-subtitle>
+                {{ group?.curriculum }}
+              </v-list-item-subtitle>
             </v-list-item>
             <v-list-item>
               <v-list-item-title>Curso</v-list-item-title>
@@ -40,6 +42,10 @@
             </v-list-item>
           </v-col>
           <v-col>
+            <v-list-item>
+              <v-list-item-title>Grupo</v-list-item-title>
+              <v-list-item-subtitle>{{ group?.name }}</v-list-item-subtitle>
+            </v-list-item>
             <v-list-item>
               <v-list-item-title>Periodo</v-list-item-title>
               <v-list-item-subtitle
@@ -113,12 +119,12 @@
         <v-card class="rounded-0">
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" variant="flat">
+            <v-btn color="primary" variant="flat" v-if="false">
               Registrar notas
               <LnxDialogConfirm
                 title="Guardar notas"
                 message="¿Seguro que desea guardar las notas?,verifique que los datos sean correctos."
-                @onConfirm="saveGrades"
+                @onConfirm="saveGrades()"
               />
             </v-btn>
           </v-card-actions>
@@ -132,9 +138,14 @@
                     <th>Nombre</th>
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
-                    <th style="width: 120px">Prom. Cap.</th>
-                    <th style="width: 120px">Act.</th>
-                    <th style="width: 120px">Nota final</th>
+                    <th
+                      style="width: 150px"
+                      v-for="index in group.units"
+                      :key="index"
+                    >
+                      UNIDAD: {{ index }}
+                    </th>
+                    <th style="width: 150px">Nota final</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -147,22 +158,30 @@
                     <td>{{ student.name }}</td>
                     <td>{{ student.lastNameFather }}</td>
                     <td>{{ student.lastNameMother }}</td>
-                    <td class="border-s">
+                    <td
+                      v-for="(grade, i) in student.gradeUnits"
+                      :key="i"
+                      class="border-s"
+                    >
+                      <v-select
+                        v-if="group.curriculumId == 1 && grade.order == 2"
+                        v-model="grade.grade"
+                        density="compact"
+                        :items="[
+                          { title: 'A', value: '2.00' },
+                          { title: 'B', value: '1.00' },
+                          { title: 'C', value: '0.00' },
+                        ]"
+                        @update:model-value="updateFinalGrade(index)"
+                      />
                       <v-text-field
+                        v-else
+                        v-model.number="grade.grade"
                         type="number"
                         min="0"
                         max="20"
-                        v-model.number="student.capacityAverage"
                         density="compact"
-                        @update:model-value="updateFinalGrade(student)"
-                      />
-                    </td>
-                    <td>
-                      <v-select
-                        v-model="student.attitudeGrade"
-                        density="compact"
-                        :items="['A', 'B', 'C']"
-                        @update:model-value="updateFinalGrade(student)"
+                        @update:model-value="updateFinalGrade(index)"
                       />
                     </td>
                     <td class="border-s">
@@ -197,34 +216,69 @@ import {
 const route = useRoute();
 const loadingView = ref<boolean>(false);
 
-const tab = ref<string>("list");
+const tab = ref<any>("list");
 
 const group = ref<any>(null);
 const groupStudents = ref<any[]>([]);
-const gradeStudents = ref<any[]>([]);
+interface GradeUnits {
+  id: number;
+  order: number;
+  grade: number;
+}
+interface GradeStudent {
+  id: number;
+  /*
+    "name": "RAQUEL NINFA",
+  "lastNameFather": "MAMANI",
+  "lastNameMother": "LIMACHI",
+  "documentNumber": "02284997",
+  */
+  name: string;
+  lastNameFather: string;
+  lastNameMother: string;
+  documentNumber: string;
+  studentId: number;
+  enrollmentGroupId: number;
+  capacityAverage: number;
+  gradeId: number;
+  gradeUnits: GradeUnits[];
+  finalGrade: number;
+}
+const gradeStudents = ref<GradeStudent[]>([]);
 
-const mapStudentGrade = (grades:any) => {
-  gradeStudents.value = groupStudents.value.map((student) => {
-    const grade = grades.find((g: any) => g.studentId === student.id);
-    return {
-      ...student,
-      capacityAverage: grade?.capacityAverage
-        ? Number(grade.capacityAverage).toFixed(2)
-        : null,
-      attitudeGrade: grade?.attitudeGrade,
-      finalGrade: grade?.finalGrade
-        ? Number(grade.finalGrade).toFixed(2)
-        : null,
-    };
-  });
-};
+// const mapStudentGrade = (grades: any) => {
+//   gradeStudents.value = groupStudents.value.map((student) => {
+//     const grade = grades.find((grade: any) => grade.studentId === student.id);
+//     if (grade) {
+//       student.capacityAverage = grade.capacityAverage;
+//       student.attitudeGrade = grade.attitudeGrade;
+//       student.finalGrade = grade.finalGrade;
+//     }
+//     return student;
+//   });
+// };
 
-const updateFinalGrade = (student: any) => {
-  const capacity = Number(student.capacityAverage) || 0;
-  const attitudePoints =
-    student.attitudeGrade === "A" ? 2 : student.attitudeGrade === "B" ? 1 : 0;
+const updateFinalGrade = (index: number) => {
+  let student = gradeStudents.value[index];
 
-  student.finalGrade = (0.9 * capacity + attitudePoints).toFixed(2);
+  if (group.value.curriculumId == 1) {
+    // **Caso Curriculum ID = 1 (PF = 0.9 * PC + Actitudes)**
+    let capacityGrades = student.gradeUnits.filter((g: any) => g.order !== 2); // Excluir actitud
+    let totalCapacity = capacityGrades.reduce((sum: number, g: any) => sum + (parseFloat(g.grade) || 0), 0);
+    let capacityAverage = capacityGrades.length > 0 ? totalCapacity / capacityGrades.length : 0;
+
+    let attitudeUnit = student.gradeUnits.find((g: any) => g.order === 2);
+    let attitude = attitudeUnit ? parseFloat(attitudeUnit.grade.toString()) || 0 : 0;
+
+    student.finalGrade = parseFloat(((capacityAverage * 0.9) + attitude).toFixed(2));
+
+  } else if (group.value.curriculumId == 2) {
+    // **Caso Curriculum ID = 2 (PF = Promedio Simple)**
+    let totalGrades = student.gradeUnits.reduce((sum: number, g: any) => sum + (parseFloat(g.grade) || 0), 0);
+    let unitCount = student.gradeUnits.length;
+
+    student.finalGrade = unitCount > 0 ? parseFloat((totalGrades / unitCount).toFixed(2)) : 0;
+  }
 };
 
 const mapRequestGrade = () => {
@@ -232,8 +286,6 @@ const mapRequestGrade = () => {
     return {
       studentId: student.id,
       enrollmentGroupId: student.enrollmentGroupId,
-      capacityAverage: student.capacityAverage,
-      attitudeGrade: student.attitudeGrade,
       finalGrade: student.finalGrade,
     };
   });
@@ -251,8 +303,8 @@ const initView = async () => {
   const id = route.params.id;
   group.value = await _getGroup(id);
   groupStudents.value = await _groupStudents(id);
-  let grades = await _getGradeStudents(id);
-  mapStudentGrade(grades);
+  gradeStudents.value = (await _getGradeStudents(id)) as GradeStudent[];
+  // mapStudentGrade(grades);
   loadingView.value = false;
 };
 
