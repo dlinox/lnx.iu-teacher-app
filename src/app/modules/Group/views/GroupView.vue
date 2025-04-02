@@ -17,7 +17,7 @@
     <v-card class="border" rounded="0">
       <v-tabs v-model="tab">
         <v-tab value="list"> Lista de estudiantes </v-tab>
-        <v-tab value="grade"> Notas </v-tab>
+        <v-tab value="grade"> Calificaciones </v-tab>
       </v-tabs>
       <v-card-item>
         <v-row>
@@ -59,17 +59,8 @@
             <v-list-item>
               <v-list-item-title>Horario</v-list-item-title>
               <v-list-item-subtitle>
-                <v-chip
-                  v-for="schedule in group?.schedules"
-                  :key="schedule.id"
-                  color="primary"
-                  rounded="0"
-                  class="me-2"
-                  label
-                >
-                  {{ schedule.day }} {{ schedule.start_hour }} -
-                  {{ schedule.end_hour }}
-                </v-chip>
+                {{ group?.schedules?.days }} {{ group?.schedules?.startHour }} -
+                {{ group?.schedules?.endHour }}
               </v-list-item-subtitle>
             </v-list-item>
           </v-col>
@@ -83,7 +74,7 @@
           <v-row>
             <v-col cols="12">
               <v-table class="roudend-0">
-                <thead class="roudend-0 bg-grey">
+                <thead class="roudend-0 bg-primary">
                   <tr>
                     <th>N°</th>
                     <th>DNI</th>
@@ -117,21 +108,22 @@
       </v-tabs-window-item>
       <v-tabs-window-item value="grade">
         <v-card class="rounded-0">
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" variant="flat" v-if="false">
-              Registrar notas
-              <LnxDialogConfirm
-                title="Guardar notas"
-                message="¿Seguro que desea guardar las notas?,verifique que los datos sean correctos."
-                @onConfirm="saveGrades()"
-              />
-            </v-btn>
-          </v-card-actions>
+          <v-card-item class="bg-grey-lighten-4 border">
+            <v-row justify="end" align="center">
+              <v-col cols="12" class="text-end">
+                <v-btn color="primary" @click="initView" variant="tonal">
+                  Generar acta
+                </v-btn>
+                <v-btn color="primary" @click="saveGrades" class="ms-2" :loadingSave="loadingSave">
+                  Guardar
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-item>
           <v-row>
             <v-col cols="12">
               <v-table class="roudend-0">
-                <thead class="roudend-0 bg-grey">
+                <thead class="roudend-0 bg-primary">
                   <tr>
                     <th>N°</th>
                     <th>DNI</th>
@@ -143,7 +135,11 @@
                       v-for="index in group.units"
                       :key="index"
                     >
-                      UNIDAD: {{ index }}
+                      <span v-if="group.curriculumId == 1">
+                        <template v-if="index == 1"> Prom. Cap. </template>
+                        <template v-else> Act </template>
+                      </span>
+                      <span v-else> UNIDAD {{ index }} </span>
                     </th>
                     <th style="width: 150px">Nota final</th>
                   </tr>
@@ -227,12 +223,6 @@ interface GradeUnits {
 }
 interface GradeStudent {
   id: number;
-  /*
-    "name": "RAQUEL NINFA",
-  "lastNameFather": "MAMANI",
-  "lastNameMother": "LIMACHI",
-  "documentNumber": "02284997",
-  */
   name: string;
   lastNameFather: string;
   lastNameMother: string;
@@ -245,18 +235,25 @@ interface GradeStudent {
   finalGrade: number;
 }
 const gradeStudents = ref<GradeStudent[]>([]);
+const unitOptions = ref<any>([]);
 
-// const mapStudentGrade = (grades: any) => {
-//   gradeStudents.value = groupStudents.value.map((student) => {
-//     const grade = grades.find((grade: any) => grade.studentId === student.id);
-//     if (grade) {
-//       student.capacityAverage = grade.capacityAverage;
-//       student.attitudeGrade = grade.attitudeGrade;
-//       student.finalGrade = grade.finalGrade;
-//     }
-//     return student;
-//   });
-// };
+const loadingSave = ref<boolean>(false);
+
+const mapUnitOptions = () => {
+  for (let i = 1; i <= group?.value?.units; i++) {
+    unitOptions.value.push({
+      title:
+        group.value.curriculumId === 1 && i == 1
+          ? "Capacidades"
+          : group.value.curriculumId === 1 && i == 2
+          ? "Actitudes"
+          : `Unidad ${i}`,
+      value: i,
+    });
+    console.log(unitOptions.value);
+  }
+};
+
 
 const updateFinalGrade = (index: number) => {
   let student = gradeStudents.value[index];
@@ -264,38 +261,61 @@ const updateFinalGrade = (index: number) => {
   if (group.value.curriculumId == 1) {
     // **Caso Curriculum ID = 1 (PF = 0.9 * PC + Actitudes)**
     let capacityGrades = student.gradeUnits.filter((g: any) => g.order !== 2); // Excluir actitud
-    let totalCapacity = capacityGrades.reduce((sum: number, g: any) => sum + (parseFloat(g.grade) || 0), 0);
-    let capacityAverage = capacityGrades.length > 0 ? totalCapacity / capacityGrades.length : 0;
+    let totalCapacity = capacityGrades.reduce(
+      (sum: number, g: any) => sum + (parseFloat(g.grade) || 0),
+      0
+    );
+    let capacityAverage =
+      capacityGrades.length > 0 ? totalCapacity / capacityGrades.length : 0;
 
     let attitudeUnit = student.gradeUnits.find((g: any) => g.order === 2);
-    let attitude = attitudeUnit ? parseFloat(attitudeUnit.grade.toString()) || 0 : 0;
+    let attitude = attitudeUnit
+      ? parseFloat(attitudeUnit.grade.toString()) || 0
+      : 0;
 
-    student.finalGrade = parseFloat(((capacityAverage * 0.9) + attitude).toFixed(2));
-
+    student.finalGrade = parseFloat(
+      (capacityAverage * 0.9 + attitude).toFixed(2)
+    );
   } else if (group.value.curriculumId == 2) {
     // **Caso Curriculum ID = 2 (PF = Promedio Simple)**
-    let totalGrades = student.gradeUnits.reduce((sum: number, g: any) => sum + (parseFloat(g.grade) || 0), 0);
+    let totalGrades = student.gradeUnits.reduce(
+      (sum: number, g: any) => sum + (parseFloat(g.grade) || 0),
+      0
+    );
     let unitCount = student.gradeUnits.length;
 
-    student.finalGrade = unitCount > 0 ? parseFloat((totalGrades / unitCount).toFixed(2)) : 0;
+    student.finalGrade =
+      unitCount > 0 ? parseFloat((totalGrades / unitCount).toFixed(2)) : 0;
   }
 };
 
 const mapRequestGrade = () => {
+  console.log(gradeStudents.value);
   return gradeStudents.value.map((student) => {
     return {
-      studentId: student.id,
-      enrollmentGroupId: student.enrollmentGroupId,
+      enrollmentGroupId: student.id,
+      studentId: student.studentId,
+      gradeId: student.gradeId,
       finalGrade: student.finalGrade,
+      gradeUnits: student.gradeUnits.map((unit) => {
+        return {
+          id: unit.id,
+          grade: unit.grade,
+          order: unit.order,
+        };
+      }),
     };
   });
 };
 
 const saveGrades = async () => {
+  const id = route.params.id;
+  loadingSave.value = true;
   const grades = mapRequestGrade();
   await _saveGradeStudents({ grades: grades });
-  await initView();
-  console.log(grades);
+  gradeStudents.value = (await _getGradeStudents(id)) as GradeStudent[];
+  loadingSave.value = false;
+
 };
 
 const initView = async () => {
@@ -304,6 +324,7 @@ const initView = async () => {
   group.value = await _getGroup(id);
   groupStudents.value = await _groupStudents(id);
   gradeStudents.value = (await _getGradeStudents(id)) as GradeStudent[];
+  mapUnitOptions();
   // mapStudentGrade(grades);
   loadingView.value = false;
 };

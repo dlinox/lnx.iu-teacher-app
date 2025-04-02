@@ -10,6 +10,7 @@ import {
 } from "@/app/middleware/auth.middleware";
 
 import GroupRoutes from "@/app/modules/Group/routes";
+import GradeRoutes from "@/app/modules/Grade/routes";
 
 const routes: RouteRecordRaw[] = [
   {
@@ -43,6 +44,7 @@ const routes: RouteRecordRaw[] = [
           import("@/app/modules/Dashboard/views/DashboardView.vue"),
       },
       ...GroupRoutes,
+      ...GradeRoutes,
     ],
   },
   {

@@ -2,28 +2,18 @@ import { http } from "@/core/http";
 
 const modulePath = "period" as const;
 
-export const _getCurrentPeriod = async (): Promise<any> => {
+export const _getAll = async (): Promise<any> => {
   try {
-    const response = await http().get(`/${modulePath}/current`);
-    return response.data.data;
-  } catch (error) {
-    return {};
-  }
-};
-
-export const _getEnrolledPeriod = async (): Promise<any> => {
-  try {
-    const response = await http().get(`/${modulePath}/enrollment-period`);
+    const response = await http().get(`/${modulePath}/all`);
     return response.data.data;
   } catch (error) {
     return [];
   }
 };
 
-//getAll
-export const _getAll = async (): Promise<any> => {
+export const _getPeriodsByTeacher = async (): Promise<any> => {
   try {
-    const response = await http().get(`/${modulePath}/all`);
+    const response = await http().get(`/${modulePath}/by-teacher`);
     return response.data.data;
   } catch (error) {
     return [];

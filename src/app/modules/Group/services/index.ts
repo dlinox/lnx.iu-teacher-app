@@ -54,3 +54,23 @@ export const _saveGradeStudents = async (data: any): Promise<any> => {
     return [];
   }
 };
+
+// Route::get('active-groups-for-teacher', [GroupController::class, 'getActiveGroupsForTeacher']);
+export const _getActiveGroupsForTeacher = async (): Promise<any> => {
+  try {
+    const response = await http().get(`${modulePath}/active-groups-for-teacher`);
+    return response.data.data;
+  } catch (error) {
+    return [];
+  }
+};
+
+// Route::post('unit-grade-students/', [GroupController::class, 'getGradeStudentsByUnit']);
+export const _getGradeStudentsByUnit = async (data: any): Promise<any> => {
+  try {
+    const response = await http().post(`${modulePath}/unit-grade-students`, data);
+    return response.data.data;
+  } catch (error) {
+    return [];
+  }
+};

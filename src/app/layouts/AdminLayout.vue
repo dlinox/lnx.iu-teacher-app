@@ -30,6 +30,17 @@
             <LnxIcon iconName="element-4" />
           </template>
         </v-list-item>
+        <!-- 
+        <v-list-item key="calification" title="Calificaciones" link exact>
+          <template v-slot:prepend>
+            <LnxIcon iconName="clipboard-tick" />
+          </template>
+        </v-list-item>
+        <v-list-item key="schedules" title="Horarios" link exact>
+          <template v-slot:prepend>
+            <LnxIcon iconName="calendar" />
+          </template>
+        </v-list-item> -->
 
         <!-- <v-list-item key="enrollment" title="Matrículas" link exact>
           <template v-slot:prepend>
@@ -90,13 +101,11 @@
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/app/store/auth.stores";
 import { _signOut } from "@/app/modules/Auth/services";
-import { usePeriodStore } from "../store/period.stores";
 import LnxIcon from "@/core/ui/components/icons/LnxIcon.vue";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const periodStore = usePeriodStore();
 const drawer = ref(true);
 
 const loading = ref<boolean>(false);
@@ -111,10 +120,7 @@ const signOutBtn = async () => {
   }
 };
 
-const initLayout = async () => {
-  await periodStore.getCurrent();
-  await periodStore.getEnrolled();
-};
+const initLayout = async () => {};
 
 onMounted(() => {
   initLayout();
