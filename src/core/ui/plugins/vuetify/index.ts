@@ -10,6 +10,7 @@ const vuetify = createVuetify({
   directives: {
     Tooltip: Tooltip, // Agrega la directiva de tooltip
   },
+
 });
 
 export default vuetify;

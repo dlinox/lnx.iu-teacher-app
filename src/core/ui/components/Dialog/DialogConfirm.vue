@@ -1,14 +1,18 @@
 <template>
   <v-dialog
     v-model="dialog"
-    max-width="350"
+    max-width="380"
     activator="parent"
     :persistent="true"
   >
     <v-card prepend-icon="mdi-alert-circle" :title="title">
+      <template #prepend>
+        <LnxIcon iconName="info-circle"></LnxIcon>
+      </template>
       <v-card-item class="text-center border-t border-b">
-        {{ message }}
+        <p v-html="message"></p>
       </v-card-item>
+      <slot></slot>
       <v-card-actions>
         <v-btn
           type="button"

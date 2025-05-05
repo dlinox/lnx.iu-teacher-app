@@ -1,10 +1,4 @@
 <template>
-  <v-card
-    title="Bienvenido"
-    subtitle="Instituto de Informática UNA - PUNO"
-    class="rounded-0"
-    elevation="0"
-  />
   <v-container>
     <v-row>
       <v-col cols="12" md="7">
@@ -129,6 +123,9 @@ import {
   _getActiveGroupsForTeacher,
 } from "@/app/modules/Group/services";
 
+import { useHeadingStore } from "@/app/store/heading.store";
+
+const headingStore = useHeadingStore();
 const periodStore = usePeriodStore();
 
 const periods = ref<any[]>([]);
@@ -143,6 +140,8 @@ const getGroups = async () => {
 };
 
 const initView = async () => {
+  headingStore.setHeading("Mi panel", `Bienvenido`);
+
   periods.value = await _getPeriodsByTeacher();
   groupsActive.value = await _getActiveGroupsForTeacher();
   periodId.value = periodStore.current?.id;

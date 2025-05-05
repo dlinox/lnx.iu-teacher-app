@@ -4,7 +4,6 @@ export default {
       class: "pa-4",
       VBtn: {
         variant: "tonal",
-        rounded: "0",
         color: "primary",
         class: "px-6 text-sm",
       },
@@ -14,7 +13,6 @@ export default {
   VBtn: {
     color: "primary",
     style: "font-size: 14px",
-    rounded: "0",
     variant: "flat",
     size: "large",
     class: "px-4",
@@ -33,6 +31,17 @@ export default {
   VTextarea: {
     hideDetails: "auto",
     rounded: "lg",
+  },
+  // v-number-input
+  VNumberInput: {
+    color: "black",
+    rounded: "lg",
+    hideDetails: "auto",
+    VBtn: {
+      variant: "tonal",
+      color: "primary",
+      class: "px-4",
+    },
   },
   VSelect: {
     color: "black",

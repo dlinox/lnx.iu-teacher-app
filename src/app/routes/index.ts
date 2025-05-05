@@ -33,9 +33,9 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: "/",
-    name: "AdminLayout",
+    name: "PanelLayout",
     beforeEnter: authMiddleware,
-    component: () => import("@/app/layouts/AdminLayout.vue"),
+    component: () => import("@/app/layouts/PanelLayout.vue"),
     children: [
       {
         path: "",

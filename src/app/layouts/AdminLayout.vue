@@ -30,7 +30,7 @@
             <LnxIcon iconName="element-4" />
           </template>
         </v-list-item>
-        <!-- 
+
         <v-list-item key="calification" title="Calificaciones" link exact>
           <template v-slot:prepend>
             <LnxIcon iconName="clipboard-tick" />
@@ -40,8 +40,12 @@
           <template v-slot:prepend>
             <LnxIcon iconName="calendar" />
           </template>
-        </v-list-item> -->
-
+        </v-list-item>
+        <v-list-item key="attendance" title="Asistencia" link exact>
+          <template v-slot:prepend>
+            <LnxIcon iconName="profile-tick" />
+          </template>
+        </v-list-item>
         <!-- <v-list-item key="enrollment" title="Matrículas" link exact>
           <template v-slot:prepend>
             <LnxIcon iconName="element-4" />
