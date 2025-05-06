@@ -140,8 +140,7 @@ const getGroups = async () => {
 };
 
 const initView = async () => {
-  headingStore.setHeading("Mi panel", `Bienvenido`);
-
+  headingStore.setHeading("Inicio", `Bienvenido`);
   periods.value = await _getPeriodsByTeacher();
   groupsActive.value = await _getActiveGroupsForTeacher();
   periodId.value = periodStore.current?.id;

@@ -1,1 +1,0 @@
-import{bD as l,d as e}from"./index-DKoxe_Cg.js";import{k as a}from"./index-CpaFAuvb.js";const i=l("period",()=>{const n=e(null),r=e(null),t=e(null);return{current:n,getCurrent:async()=>{n.value=null},enrolled:t,getEnrolled:async()=>{t.value=null},gradeDeadline:r,getGradeDeadline:async()=>{r.value=await a()}}});export{i as u};
