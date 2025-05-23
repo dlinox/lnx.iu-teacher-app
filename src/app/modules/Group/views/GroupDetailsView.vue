@@ -140,8 +140,8 @@
                         v-model.number="grade.grade"
                         controlVariant="hidden"
                         :precision="0"
-                        :max="3"
-                        :min="1"
+                        :max="2"
+                        :min="0"
                         density="compact"
                         @update:model-value="updateFinalGrade(index)"
                       ></v-number-input>

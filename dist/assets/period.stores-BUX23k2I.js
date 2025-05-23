@@ -1,1 +1,0 @@
-import{bC as l,d as e}from"./index-gvrUa8_8.js";import{k as a}from"./index-CX7O1jiw.js";const i=l("period",()=>{const n=e(null),r=e(null),t=e(null);return{current:n,getCurrent:async()=>{n.value=null},enrolled:t,getEnrolled:async()=>{t.value=null},gradeDeadline:r,getGradeDeadline:async()=>{r.value=await a()}}});export{i as u};
