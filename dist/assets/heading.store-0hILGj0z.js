@@ -1,1 +1,0 @@
-import{bB as r,d as i}from"./index-AI7jGR8d.js";const d=r("heading",()=>{const t=i(""),s=i(""),n=e=>{t.value=e},o=e=>{s.value=e};return{title:t,setTitle:n,subtitle:s,setSubtitle:o,setHeading:(e,a)=>{n(e),o(a)}}});export{d as u};

@@ -64,10 +64,10 @@
                 <thead class="roudend-0 bg-grey-lighten-3">
                   <tr>
                     <th>N°</th>
-                    <th>DNI</th>
-                    <th>Nombre</th>
+                    <th>Código</th>
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
+                    <th>Nombre</th>
                     <th>Celular</th>
                     <th>Tipo de estudiante</th>
                   </tr>
@@ -78,10 +78,10 @@
                     :key="student.id"
                   >
                     <td>{{ index + 1 }}</td>
-                    <td>{{ student.documentNumber }}</td>
-                    <td>{{ student.name }}</td>
+                    <td>{{ student.code }}</td>
                     <td>{{ student.lastNameFather }}</td>
                     <td>{{ student.lastNameMother }}</td>
+                    <td>{{ student.name }}</td>
                     <td>{{ student.phone }}</td>
                     <td>{{ student.studentType }}</td>
                   </tr>
@@ -99,10 +99,10 @@
                 <thead class="bg-grey-lighten-3">
                   <tr>
                     <th>N°</th>
-                    <th>DNI</th>
-                    <th>Nombre</th>
+                    <!-- <th>DNI</th> -->
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
+                    <th>Nombre</th>
                     <th
                       style="width: 120px"
                       v-for="index in group.units"
@@ -110,7 +110,7 @@
                     >
                       <span v-if="group.gradingModel == 1">
                         <template v-if="index == 1"> Prom. Cap. </template>
-                        <template v-else> Act </template>
+                        <template v-else> Act. </template>
                       </span>
                       <span v-else> Unidad {{ index }} </span>
                     </th>
@@ -123,29 +123,28 @@
                     :key="student.id"
                   >
                     <td>{{ index + 1 }}</td>
-                    <td>{{ student.documentNumber }}</td>
-                    <td>{{ student.name }}</td>
+                    <!-- <td>{{ student.documentNumber }}</td> -->
                     <td>{{ student.lastNameFather }}</td>
                     <td>{{ student.lastNameMother }}</td>
+                    <td>{{ student.name }}</td>
                     <td
                       v-for="(grade, i) in student.gradeUnits"
                       :key="i"
                       class="border-s"
                     >
-                      <v-select
+                      <v-number-input
                         v-if="group.gradingModel == 1 && grade.order == 2"
-                        v-model.number="grade.grade"
-                        density="compact"
                         :readonly="
                           periodStore.gradeDeadline?.periodId != group.periodId
                         "
-                        :items="[
-                          { title: 'A', value: 2 },
-                          { title: 'B', value: 1 },
-                          { title: 'C', value: 0 },
-                        ]"
+                        v-model.number="grade.grade"
+                        controlVariant="hidden"
+                        :precision="0"
+                        :max="3"
+                        :min="1"
+                        density="compact"
                         @update:model-value="updateFinalGrade(index)"
-                      />
+                      ></v-number-input>
 
                       <v-number-input
                         v-else
@@ -164,9 +163,11 @@
                     <td class="border-s">
                       <v-number-input
                         v-model.number="student.finalGrade"
-                        :precision="2"
+                        :precision="0"
                         density="compact"
                         controlVariant="hidden"
+                        :class="student.finalGrade < 11 ? 'text-red' : ''"
+                        :max="20"
                         readonly
                       ></v-number-input>
                     </td>
@@ -245,7 +246,7 @@
                 <thead class="roudend-0 bg-grey-lighten-3">
                   <tr>
                     <th>N°</th>
-                    <th>DNI</th>
+                    <!-- <th>DNI</th> -->
                     <th>Nombre</th>
                     <th style="width: 200px">
                       <v-text-field
@@ -263,7 +264,7 @@
                     :key="student.id"
                   >
                     <td>{{ index + 1 }}</td>
-                    <td>{{ student.documentNumber }}</td>
+                    <!-- <td>{{ student.documentNumber }}</td> -->
                     <td>
                       {{ student.lastNameFather }} {{ student.lastNameMother }},
                       {{ student.name }}
@@ -334,7 +335,6 @@ import {
 import { useHeadingStore } from "@/app/store/heading.store";
 import { usePeriodStore } from "@/app/store/period.stores";
 import DialogConfirm from "@/core/ui/components/Dialog/DialogConfirm.vue";
-
 
 const headingStore = useHeadingStore();
 const periodStore = usePeriodStore();
